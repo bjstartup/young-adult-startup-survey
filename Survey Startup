@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Teen Entrepreneur Survey</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Inter', sans-serif;
+  background: #0f0e17;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1rem;
+}
+.card {
+  background: #1a1827;
+  border: 1px solid #2e2b45;
+  border-radius: 20px;
+  padding: 2.5rem 2rem;
+  max-width: 560px;
+  width: 100%;
+  margin: 0 auto;
+}
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #2e2b45;
+  color: #a39ed6;
+  font-size: 12px;
+  padding: 5px 12px;
+  border-radius: 100px;
+  margin-bottom: 1.25rem;
+}
+.badge::before { content: "⏱"; font-size: 13px; }
+h1 {
+  font-size: 26px;
+  font-weight: 600;
+  color: #f0eeff;
+  line-height: 1.3;
+  margin-bottom: 10px;
+}
+.subtitle {
+  font-size: 15px;
+  color: #7b78a0;
+  line-height: 1.6;
+  margin-bottom: 2rem;
+}
+.progress-track {
+  height: 4px;
+  background: #2e2b45;
+  border-radius: 2px;
+  margin-bottom: 2rem;
+  overflow: hidden;
+}
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #7F77DD, #b8b2ff);
+  border-radius: 2px;
+  transition: width 0.5s cubic-bezier(.4,0,.2,1);
+}
+.q-label {
+  font-size: 12px;
+  color: #7b78a0;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+.q-text {
+  font-size: 20px;
+  font-weight: 500;
+  color: #f0eeff;
+  line-height: 1.4;
+  margin-bottom: 1.5rem;
+}
+.option {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 13px 16px;
+  margin-bottom: 8px;
+  background: #12111e;
+  border: 1px solid #2e2b45;
+  border-radius: 12px;
+  font-size: 15px;
+  color: #c8c4f0;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s, color 0.15s;
+  font-family: 'Inter', sans-serif;
+}
+.option:hover { border-color: #7F77DD; background: #1e1c35; color: #f0eeff; }
+.option.selected { border-color: #7F77DD; background: #1e1c35; color: #b8b2ff; font-weight: 500; }
+textarea, input[type="text"] {
+  width: 100%;
+  padding: 13px 16px;
+  background: #12111e;
+  border: 1px solid #2e2b45;
+  border-radius: 12px;
+  font-size: 15px;
+  color: #f0eeff;
+  font-family: 'Inter', sans-serif;
+  resize: vertical;
+  outline: none;
+  transition: border-color 0.15s;
+}
+textarea:focus, input[type="text"]:focus { border-color: #7F77DD; }
+textarea::placeholder, input::placeholder { color: #4e4b6a; }
+.btn {
+  width: 100%;
+  padding: 14px;
+  background: #7F77DD;
+  border: none;
+  border-radius: 12px;
+  color: #fff;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, transform 0.1s;
+  font-family: 'Inter', sans-serif;
+  margin-top: 1.25rem;
+}
+.btn:hover { background: #6b63cc; }
+.btn:active { transform: scale(0.98); }
+.btn:disabled { background: #2e2b45; color: #4e4b6a; cursor: not-allowed; transform: none; }
+.name-input { height: 50px; margin-bottom: 1.25rem; }
+.result-emoji { font-size: 52px; margin-bottom: 1rem; text-align: center; }
+.result-title { font-size: 22px; font-weight: 600; color: #f0eeff; margin-bottom: 8px; text-align: center; }
+.result-sub { font-size: 14px; color: #7b78a0; line-height: 1.6; text-align: center; margin-bottom: 1.5rem; }
+.status-box {
+  background: #12111e;
+  border: 1px solid #2e2b45;
+  border-radius: 10px;
+  padding: 12px 16px;
+  font-size: 13px;
+  color: #7b78a0;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+.status-box.success { border-color: #1d9e75; color: #5DCAA5; }
+.status-box.error { border-color: #D85A30; color: #F0997B; }
+.ai-summary {
+  background: #1e1c35;
+  border: 1px solid #2e2b45;
+  border-radius: 10px;
+  padding: 14px 16px;
+  font-size: 14px;
+  color: #a39ed6;
+  line-height: 1.7;
+  margin-bottom: 1rem;
+  font-style: italic;
+}
+.answer-list {
+  background: #12111e;
+  border: 1px solid #2e2b45;
+  border-radius: 10px;
+  overflow: hidden;
+  margin-bottom: 1rem;
+}
+.answer-row {
+  padding: 10px 16px;
+  border-bottom: 1px solid #1e1c35;
+  font-size: 13px;
+}
+.answer-row:last-child { border-bottom: none; }
+.answer-q { color: #a39ed6; font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; display: block; margin-bottom: 3px; }
+.answer-v { color: #c8c4f0; }
+.copy-btn {
+  background: #12111e;
+  border: 1px solid #2e2b45;
+  color: #a39ed6;
+  font-size: 13px;
+  padding: 10px;
+  border-radius: 10px;
+  cursor: pointer;
+  width: 100%;
+  font-family: 'Inter', sans-serif;
+  transition: border-color 0.15s, color 0.15s;
+}
+.copy-btn:hover { border-color: #7F77DD; color: #b8b2ff; }
+@media (max-width: 480px) {
+  .card { padding: 1.75rem 1.25rem; }
+  h1 { font-size: 22px; }
+  .q-text { font-size: 18px; }
+}
+</style>
+</head>
+<body>
+<div class="card">
+
+  <!-- INTRO -->
+  <div id="intro">
+    <div class="badge">About 5 minutes</div>
+    <h1>What kind of entrepreneur are you?</h1>
+    <p class="subtitle">Answer a few quick questions and we'll map out your entrepreneurial path. No right or wrong answers — just be yourself!</p>
+    <input type="text" id="name-input" class="name-input" placeholder="First, what's your name?" />
+    <button class="btn" onclick="startSurvey()">Let's go →</button>
+  </div>
+
+  <!-- SURVEY -->
+  <div id="survey" style="display:none;">
+    <div class="progress-track"><div class="progress-fill" id="progress" style="width:0%"></div></div>
+    <div class="q-label" id="q-label">Question 1 of 9</div>
+    <div class="q-text" id="q-text"></div>
+    <div id="q-body"></div>
+    <button class="btn" id="next-btn" onclick="nextQ()" disabled>Continue →</button>
+  </div>
+
+  <!-- RESULT -->
+  <div id="result" style="display:none;">
+    <div class="result-emoji">🚀</div>
+    <div class="result-title" id="r-title"></div>
+    <div class="result-sub">Your answers are on their way to your advisor. They'll review everything and reach back out with your personalised entrepreneurship plan.</div>
+    <div class="status-box" id="status">Sending your results...</div>
+    <div class="ai-summary" id="ai-box" style="display:none;"></div>
+    <div class="answer-list" id="answer-list"></div>
+    <button class="copy-btn" onclick="copyAll()">📋 Copy full results</button>
+  </div>
+
+</div>
+
+<script>
+const EJS_SERVICE  = "service_ybb3r5g";
+const EJS_TEMPLATE = "template_2v22jp5";
+const EJS_PUBKEY   = "B4v5IFXizeWJ5fPZK";
+const RECIPIENT    = "1bjstartup1@gmail.com";
+
+let name = "", answers = {}, qi = 0;
+
+const Qs = [
+  { id:"spark", text: n => `Hey ${n}! What sparked your interest in starting something?`,
+    opts:["I want to make money","I have a cool idea I can't stop thinking about","I want to help people with a problem","I just want to be my own boss","I'm honestly not sure yet"] },
+  { id:"stage", text: () => "How far along is your idea right now?",
+    opts:["Just a tiny spark — still figuring it out","I have a rough idea but nothing solid","I have a clear idea and I've told people about it","I've already started working on it"] },
+  { id:"strengths", text: () => "What are you naturally good at? Pick your top vibe.",
+    opts:["Talking to people / selling","Creating things (art, music, content, code)","Solving problems / figuring stuff out","Organizing and planning","I'm still discovering my strengths"] },
+  { id:"biz_type", text: () => "What kind of business feels most exciting to you?",
+    opts:["Online / social media / digital","A physical product (something you can hold)","A service (helping people with something)","An app or website","I don't know yet"] },
+  { id:"challenge", text: () => "What feels like your biggest challenge right now?",
+    opts:["I don't know where to start","I don't have money to invest","I'm not sure if my idea is good","I don't know how to get customers","I need someone to help me"] },
+  { id:"time", text: () => "How much time could you realistically give each week?",
+    opts:["1–2 hours (super busy with school/life)","3–5 hours (I can carve out some time)","5–10 hours (I'm motivated and ready)","As much as it takes — I'm all in"] },
+  { id:"idea", text: n => `In your own words, ${n} — what is your idea or what business do you dream about?`,
+    type:"text", placeholder:"Don't worry about it being perfect, just tell me what's in your head..." },
+  { id:"next_step", text: () => "If someone gave you one task to do this week, what would feel most comfortable?",
+    opts:["Talk to 3 people about my idea","Research what similar businesses exist","Make a simple post or video about it","Write down a plan or list of steps","I honestly don't know where to begin"] },
+  { id:"dream", text: n => `Last one, ${n}! 🎉 In 2 years, what does success look like?`,
+    opts:["Making enough to cover my expenses","Building something real that people use","Running a full business with a team","Becoming known in my niche","Just learning if this is for me"] }
+];
+
+const Labels = {
+  spark:"What sparked their interest", stage:"Idea stage", strengths:"Top strength",
+  biz_type:"Business type", challenge:"Biggest challenge", time:"Time available/week",
+  idea:"Idea in their own words", next_step:"Most comfortable next step", dream:"Success vision"
+};
+
+function startSurvey() {
+  name = document.getElementById("name-input").value.trim() || "Friend";
+  document.getElementById("intro").style.display = "none";
+  document.getElementById("survey").style.display = "block";
+  renderQ();
+}
+
+function renderQ() {
+  const q = Qs[qi];
+  document.getElementById("progress").style.width = Math.round((qi / Qs.length) * 100) + "%";
+  document.getElementById("q-label").textContent = `Question ${qi + 1} of ${Qs.length}`;
+  document.getElementById("q-text").textContent = q.text(name);
+  const body = document.getElementById("q-body");
+  const btn  = document.getElementById("next-btn");
+  btn.disabled = true;
+  btn.textContent = qi === Qs.length - 1 ? "Submit my answers 🚀" : "Continue →";
+
+  if (q.type === "text") {
+    body.innerHTML = `<textarea rows="4" id="ta" placeholder="${q.placeholder}"></textarea>`;
+    const ta = document.getElementById("ta");
+    if (answers[q.id]) { ta.value = answers[q.id]; btn.disabled = false; }
+    ta.addEventListener("input", () => {
+      answers[q.id] = ta.value.trim();
+      btn.disabled = ta.value.trim().length < 5;
+    });
+  } else {
+    body.innerHTML = q.opts.map(o =>
+      `<button class="option${answers[q.id]===o?' selected':''}" onclick="pick(this,'${o.replace(/'/g,"\\'")}','${q.id}')">${o}</button>`
+    ).join("");
+    if (answers[q.id]) btn.disabled = false;
+  }
+}
+
+function pick(el, val, id) {
+  document.querySelectorAll(".option").forEach(b => b.classList.remove("selected"));
+  el.classList.add("selected");
+  answers[id] = val;
+  document.getElementById("next-btn").disabled = false;
+}
+
+function nextQ() {
+  if (qi < Qs.length - 1) { qi++; renderQ(); }
+  else finish();
+}
+
+function buildText() {
+  return `TEEN ENTREPRENEUR SURVEY\nName: ${name}\nDate: ${new Date().toLocaleString()}\n\n` +
+    Object.entries(answers).map(([k,v]) => `${Labels[k]||k}:\n${v}`).join("\n\n");
+}
+
+function finish() {
+  document.getElementById("survey").style.display = "none";
+  document.getElementById("result").style.display = "block";
+  document.getElementById("r-title").textContent = `Thanks, ${name}! You're all done 🎉`;
+
+  const list = document.getElementById("answer-list");
+  list.innerHTML = Object.entries(answers).map(([k,v]) =>
+    `<div class="answer-row"><span class="answer-q">${Labels[k]||k}</span><span class="answer-v">${v}</span></div>`
+  ).join("");
+
+  sendEmail();
+  generateSummary();
+}
+
+async function sendEmail() {
+  const status = document.getElementById("status");
+  try {
+    emailjs.init(EJS_PUBKEY);
+    await emailjs.send(EJS_SERVICE, EJS_TEMPLATE, {
+      to_email:  RECIPIENT,
+      from_name: name,
+      subject:   `New survey — ${name}`,
+      message:   buildText(),
+      reply_to:  RECIPIENT
+    });
+    status.textContent = `✓ Results emailed to ${RECIPIENT}`;
+    status.classList.add("success");
+  } catch(e) {
+    status.textContent = "Couldn't auto-send — use the copy button below.";
+    status.classList.add("error");
+    console.error("EmailJS error:", e);
+  }
+}
+
+async function generateSummary() {
+  try {
+    const res = await fetch("https://api.anthropic.com/v1/messages", {
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body: JSON.stringify({
+        model:"claude-sonnet-4-6", max_tokens:300,
+        messages:[{ role:"user", content:`A teenager named ${name} completed an entrepreneur survey:\n\n${buildText()}\n\nWrite a warm, encouraging 3-sentence advisor summary. Note their strongest signals, potential business direction, and one concrete first step. Be specific.` }]
+      })
+    });
+    const data = await res.json();
+    const text = data.content?.map(c=>c.text||"").join("") || "";
+    if (text) {
+      const box = document.getElementById("ai-box");
+      box.textContent = text;
+      box.style.display = "block";
+    }
+  } catch(e) {}
+}
+
+function copyAll() {
+  const ai = document.getElementById("ai-box");
+  const extra = ai.style.display!=="none" ? "\n\nAI PROFILE:\n" + ai.textContent : "";
+  navigator.clipboard.writeText(buildText() + extra).then(() => {
+    const btn = document.querySelector(".copy-btn");
+    btn.textContent = "✓ Copied!";
+    setTimeout(() => { btn.textContent = "📋 Copy full results"; }, 2000);
+  });
+}
+</script>
+</body>
+</html>
